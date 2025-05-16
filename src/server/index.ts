@@ -6,6 +6,7 @@ import { pool, testDatabaseConnection, createAdminUser } from '../config/databas
 import { auth, checkRole } from '../middleware/auth';
 import { z } from 'zod';
 import type { RowDataPacket } from 'mysql2';
+import fs from 'fs';
 
 const app = express();
 const port = process.env.PORT || 3001;
@@ -244,8 +245,10 @@ app.get('/api/dashboard/recent-orders', auth, async (req, res) => {
     );
     res.json(rows);
   } catch (error) {
-    console.error('Erro ao buscar pedidos recentes:', error);
-    res.status(500).json({ error: 'Erro ao buscar pedidos recentes' });
+    // Log detalhado do erro para debug
+    console.error('Erro ao buscar pedidos recentes:', error && error.message ? error.message : error);
+    if (error && error.stack) console.error(error.stack);
+    res.status(500).json({ error: 'Erro ao buscar pedidos recentes', details: error && error.message ? error.message : error });
   }
 });
 
@@ -321,6 +324,64 @@ app.get('/api/reservations', auth, async (req, res) => {
   } catch (error) {
     console.error('Erro ao buscar reservas:', error);
     res.status(500).json({ error: 'Erro ao buscar reservas' });
+  }
+});
+
+// --- Multi-Tenant: Cadastro de Cliente/Estabelecimento e Criação de Banco ---
+const tenantSchema = z.object({
+  name: z.string().min(3),
+  dbName: z.string().min(3),
+  dbUser: z.string().min(1),
+  dbPassword: z.string().min(1),
+  dbHost: z.string().min(3),
+  dbPort: z.number().int().min(1)
+});
+
+// Tabela central de tenants (clientes)
+app.post('/api/tenants', async (req, res) => {
+  try {
+    const data = tenantSchema.parse(req.body);
+    // Conecta no banco "mestre" para criar o novo banco do cliente
+    const masterPool = await import('mysql2/promise').then(mysql => mysql.createPool({
+      host: process.env.DB_HOST || '189.83.186.160',
+      user: process.env.DB_USER || 'alesxandro',
+      password: process.env.DB_PASSWORD || '46302113',
+      port: process.env.DB_PORT ? Number(process.env.DB_PORT) : 3306,
+      waitForConnections: true,
+      connectionLimit: 2,
+      queueLimit: 0
+    }));
+    // Cria o banco de dados do cliente
+    await masterPool.query(`CREATE DATABASE IF NOT EXISTS \`${data.dbName}\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;`);
+    // Executa o script de estrutura (ajuste o caminho se necessário)
+    const sql = fs.readFileSync('database_script.sql', 'utf8');
+    const clientPool = await import('mysql2/promise').then(mysql => mysql.createPool({
+      host: data.dbHost,
+      user: data.dbUser,
+      password: data.dbPassword,
+      database: data.dbName,
+      port: data.dbPort,
+      waitForConnections: true,
+      connectionLimit: 2,
+      queueLimit: 0
+    }));
+    for (const statement of sql.split(';')) {
+      if (statement.trim()) {
+        await clientPool.query(statement);
+      }
+    }
+    // Salva o tenant na tabela central (crie a tabela tenants no banco mestre)
+    await masterPool.query(
+      'CREATE TABLE IF NOT EXISTS tenants (id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(100), db_name VARCHAR(100), db_host VARCHAR(100), db_user VARCHAR(100), db_password VARCHAR(100), db_port INT, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)'
+    );
+    await masterPool.query(
+      'INSERT INTO tenants (name, db_name, db_host, db_user, db_password, db_port) VALUES (?, ?, ?, ?, ?, ?)',
+      [data.name, data.dbName, data.dbHost, data.dbUser, data.dbPassword, data.dbPort]
+    );
+    res.status(201).json({ message: 'Cliente cadastrado e banco criado com sucesso!' });
+  } catch (error) {
+    console.error('Erro ao criar tenant:', error);
+    res.status(500).json({ error: 'Erro ao cadastrar cliente ou criar banco.' });
   }
 });
 

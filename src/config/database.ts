@@ -19,7 +19,7 @@ interface DatabaseConfig {
 }
 
 const dbConfig: DatabaseConfig = {
-  host: '192.168.100.151',
+  host: '189.83.186.160',
   user: 'alesxandro',
   password: '46302113',
   port: 3306,
@@ -31,7 +31,7 @@ const dbConfig: DatabaseConfig = {
 
 // Configuração do pool de conexões
 export const pool = mysql.createPool({
-  host: process.env.DB_HOST || '192.168.100.151',
+  host: process.env.DB_HOST || '189.83.186.160',
   user: process.env.DB_USER || 'alesxandro',
   password: process.env.DB_PASSWORD || '46302113',
   database: process.env.DB_NAME || 'barfesta_db',

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -7,26 +7,46 @@ import { CalendarDays, Plus, X, Check } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-
-// Mock data for reservations
-// Remover o array mockReservations com dados simulados do início do arquivo. O próximo passo será buscar os dados reais via API.
+import api from "@/services/api";
+import { Reservation } from "@/types";
 
 const Reservations = () => {
   const [date, setDate] = useState<Date | undefined>(new Date());
   const [activeTab, setActiveTab] = useState("upcoming");
-  
+  const [reservations, setReservations] = useState<Reservation[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchReservations = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const response = await api.get("/reservations");
+        setReservations(response.data);
+      } catch (err) {
+        setError("Erro ao carregar reservas");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchReservations();
+  }, []);
+
   // Filter reservations based on selected date
-  const filteredReservations = mockReservations.filter(reservation => {
+  const filteredReservations = reservations.filter(reservation => {
     if (!date) return true;
-    
     const reservationDate = new Date(reservation.date);
     return reservationDate.getDate() === date.getDate() &&
            reservationDate.getMonth() === date.getMonth() &&
            reservationDate.getFullYear() === date.getFullYear();
   });
-  
-  const pendingReservations = filteredReservations.filter(r => r.status === "pending");
-  const confirmedReservations = filteredReservations.filter(r => r.status === "confirmed");
+
+  const pendingReservations = filteredReservations.filter(r => r.status === "pendente");
+  const confirmedReservations = filteredReservations.filter(r => r.status === "confirmada");
+
+  if (loading) return <div className="p-8 text-center text-muted-foreground">Carregando reservas...</div>;
+  if (error) return <div className="p-8 text-center text-red-500">{error}</div>;
 
   return (
     <div className="container py-6 space-y-6">
@@ -113,13 +133,13 @@ const Reservations = () => {
 };
 
 // Reservation item component
-const ReservationItem = ({ reservation }: { reservation: any }) => {
+const ReservationItem = ({ reservation }: { reservation: Reservation }) => {
   const { name, date, people, table, status, contact } = reservation;
   
   const getStatusColor = (status: string) => {
     switch (status) {
-      case "confirmed": return "bg-green-100 text-green-800";
-      case "pending": return "bg-yellow-100 text-yellow-800";
+      case "confirmada": return "bg-green-100 text-green-800";
+      case "pendente": return "bg-yellow-100 text-yellow-800";
       default: return "bg-gray-100 text-gray-800";
     }
   };
@@ -135,9 +155,9 @@ const ReservationItem = ({ reservation }: { reservation: any }) => {
       </div>
       <div className="flex items-center gap-2">
         <Badge className={getStatusColor(status)}>
-          {status === "confirmed" ? "Confirmada" : "Pendente"}
+          {status === "confirmada" ? "Confirmada" : "Pendente"}
         </Badge>
-        {status === "pending" && (
+        {status === "pendente" && (
           <>
             <Button size="sm" variant="outline" className="h-8 w-8 p-0">
               <Check className="h-4 w-4" />

@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Label } from "@/components/ui/label";
 import { Settings as SettingsIcon, User, Store, CreditCard, Lock, Mail } from "lucide-react";
-import { DatabaseTest } from "@/components/DatabaseTest";
+import { DatabaseConfig, TenantRegistration } from "@/components/DatabaseTest";
 
 const Settings = () => {
   return (
@@ -397,11 +397,20 @@ const Settings = () => {
           </Card>
           <Card>
             <CardHeader>
-              <CardTitle>Teste de Conexão com o Banco de Dados</CardTitle>
-              <CardDescription>Verifique se o sistema está conectado corretamente ao banco de dados configurado.</CardDescription>
+              <CardTitle>Configuração do Banco de Dados</CardTitle>
+              <CardDescription>Configure a conexão real do sistema com o banco de dados MySQL.</CardDescription>
             </CardHeader>
             <CardContent>
-              <DatabaseTest />
+              <DatabaseConfig />
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader>
+              <CardTitle>Cadastro de Cliente/Estabelecimento</CardTitle>
+              <CardDescription>Cadastre um novo cliente e crie automaticamente o banco de dados para o estabelecimento.</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <TenantRegistration />
             </CardContent>
           </Card>
         </TabsContent>

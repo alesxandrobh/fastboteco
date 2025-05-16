@@ -54,4 +54,17 @@ export interface Order {
   notes: string | null;
   created_at: string;
   updated_at: string;
-} 
+}
+
+// Adiciona a tipagem para Reservation
+export interface Reservation {
+  id: number;
+  name: string;
+  date: string; // formato ISO (YYYY-MM-DD)
+  time_start: string; // formato HH:mm:ss
+  time_end: string; // formato HH:mm:ss
+  people: number;
+  status: 'pendente' | 'confirmada' | 'cancelada' | 'concluída';
+  table: number;
+  contact: string;
+}
