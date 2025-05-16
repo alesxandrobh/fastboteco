@@ -1,0 +1,9 @@
+
+.kanban-column {
+  @apply bg-gray-50 p-4 rounded-lg;
+  min-height: 300px;
+}
+
+.kanban-card {
+  @apply bg-white p-3 rounded-md border shadow-sm cursor-pointer hover:shadow-md transition-shadow;
+}
