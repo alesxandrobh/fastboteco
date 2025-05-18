@@ -133,7 +133,7 @@ const Dashboard = () => {
               ) : (
                 recentOrders.map((order) => (
                   <div key={order.id} className="flex justify-between items-center border-b py-2">
-                    <span>Mesa #{order.table} - {order.customer}</span>
+                    <span>Mesa #{order.table_number ? order.table_number : 'N/A'} - {order.customer}</span>
                     <span className="font-semibold">R$ {order.total.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</span>
                     <span className="text-xs text-muted-foreground">{order.status}</span>
                   </div>

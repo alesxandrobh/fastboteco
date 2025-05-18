@@ -5,10 +5,11 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Store, Calendar, Plus } from "lucide-react";
 import api from "../services/api";
+import { Rental } from "@/types";
 
 const Rentals = () => {
   const [activeTab, setActiveTab] = useState("active");
-  const [rentalOrders, setRentalOrders] = useState([]);
+  const [rentalOrders, setRentalOrders] = useState<Rental[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -18,7 +19,17 @@ const Rentals = () => {
       setError(null);
       try {
         const response = await api.get("/api/rentals");
-        setRentalOrders(response.data);
+        // Ajuste: garantir compatibilidade de campos
+        const rentals = response.data.map((order: any) => ({
+          ...order,
+          status: (order.status === 'confirmado' ? 'confirmed' : order.status === 'pendente' ? 'pending' : (order.status || '')),
+          totalValue: Number(order.totalValue || order.total || 0),
+          client: order.client || order.customer || 'Desconhecido',
+          eventType: order.eventType || order.notes || '',
+          date: order.date || order.event_date || '',
+        })) as Rental[];
+        console.log('Locações carregadas:', rentals);
+        setRentalOrders(rentals);
       } catch (err) {
         setError("Erro ao carregar locações do banco de dados");
       } finally {

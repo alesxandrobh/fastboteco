@@ -22,7 +22,7 @@ const Reservations = () => {
       setLoading(true);
       setError(null);
       try {
-        const response = await api.get("/reservations");
+        const response = await api.get("/api/reservations");
         setReservations(response.data);
       } catch (err) {
         setError("Erro ao carregar reservas");
@@ -134,7 +134,7 @@ const Reservations = () => {
 
 // Reservation item component
 const ReservationItem = ({ reservation }: { reservation: Reservation }) => {
-  const { name, date, people, table, status, contact } = reservation;
+  const { name, date, people, table_number, status, contact } = reservation;
   
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -149,7 +149,7 @@ const ReservationItem = ({ reservation }: { reservation: Reservation }) => {
       <div className="space-y-1">
         <h3 className="font-medium text-base">{name}</h3>
         <p className="text-sm text-muted-foreground">
-          {format(date, "HH:mm")} · {people} pessoas · Mesa {table}
+          {format(date, "HH:mm")} · {people} pessoas · Mesa {table_number}
         </p>
         <p className="text-xs text-muted-foreground">{contact}</p>
       </div>

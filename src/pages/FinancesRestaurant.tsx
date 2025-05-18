@@ -98,9 +98,9 @@ const FinancesRestaurant = () => {
               <CardTitle>Desempenho Financeiro Mensal</CardTitle>
               <CardDescription>Acompanhamento da receita, despesas e lucro nos últimos 6 meses</CardDescription>
             </CardHeader>
-            <CardContent className="h-[300px]">
+            <CardContent className="h-[700px]">
               <ChartContainer config={chartConfig}>
-                <ResponsiveContainer width="100%" height="100%">
+                <ResponsiveContainer width="50%" height="50%">
                   <BarChart data={monthlyData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="name" />
@@ -120,9 +120,9 @@ const FinancesRestaurant = () => {
               <CardTitle>Desempenho Semanal</CardTitle>
               <CardDescription>Resultados por dia da semana atual</CardDescription>
             </CardHeader>
-            <CardContent className="h-[300px]">
+            <CardContent className="h-[700px]">
               <ChartContainer config={chartConfig}>
-                <ResponsiveContainer width="100%" height="100%">
+                <ResponsiveContainer width="10%" height="10%">
                   <LineChart data={dailyData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="name" />

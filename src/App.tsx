@@ -20,7 +20,6 @@ import Rentals from "./pages/Rentals";
 import Employees from "./pages/Employees";
 import Customers from "./pages/Customers";
 import Settings from "./pages/Settings";
-import { DatabaseTest } from './components/DatabaseTest';
 
 const queryClient = new QueryClient();
 
@@ -45,7 +44,7 @@ const App = () => (
             <Route path="/rentals" element={<AppLayout><Rentals /></AppLayout>} />
             <Route path="/employees" element={<AppLayout><Employees /></AppLayout>} />
             <Route path="/customers" element={<AppLayout><Customers /></AppLayout>} />
-            <Route path="/settings" element={<AppLayout><Settings><DatabaseTest /></Settings></AppLayout>} />
+            <Route path="/settings" element={<Settings />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

@@ -6,6 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Users, Search, Plus } from "lucide-react";
 import api from "../services/api";
 import { Dialog, DialogTrigger, DialogContent } from "@/components/ui/dialog";
+import { toast } from "@/components/ui/use-toast";
 
 const Customers = () => {
   const [customers, setCustomers] = useState([]);
@@ -46,10 +47,11 @@ const Customers = () => {
   const addCustomer = async (customerData) => {
     setLoading(true);
     try {
-      const response = await api.post("/customers", customerData);
+      const response = await api.post("/api/customers", customerData);
       setCustomers((prev) => [...prev, response.data]);
+      toast({ title: "Cliente cadastrado com sucesso!", variant: "default" });
     } catch (error) {
-      // TODO: tratamento de erro global
+      toast({ title: "Erro ao cadastrar cliente", variant: "destructive" });
     } finally {
       setLoading(false);
     }
@@ -58,10 +60,11 @@ const Customers = () => {
   const editCustomer = async (id, updatedData) => {
     setLoading(true);
     try {
-      const response = await api.put(`/customers/${id}`, updatedData);
+      const response = await api.put(`/api/customers/${id}`, updatedData);
       setCustomers((prev) => prev.map(c => c.id === id ? response.data : c));
+      toast({ title: "Cliente atualizado com sucesso!", variant: "default" });
     } catch (error) {
-      // TODO: tratamento de erro global
+      toast({ title: "Erro ao atualizar cliente", variant: "destructive" });
     } finally {
       setLoading(false);
     }
@@ -70,10 +73,11 @@ const Customers = () => {
   const deleteCustomer = async (id) => {
     setLoading(true);
     try {
-      await api.delete(`/customers/${id}`);
+      await api.delete(`/api/customers/${id}`);
       setCustomers((prev) => prev.filter(c => c.id !== id));
+      toast({ title: "Cliente removido com sucesso!", variant: "default" });
     } catch (error) {
-      // TODO: tratamento de erro global
+      toast({ title: "Erro ao remover cliente", variant: "destructive" });
     } finally {
       setLoading(false);
     }
@@ -83,7 +87,7 @@ const Customers = () => {
     const fetchCustomers = async () => {
       setLoading(true);
       try {
-        const response = await api.get("/customers");
+        const response = await api.get("/api/customers");
         setCustomers(response.data);
       } catch (error) {
         // TODO: adicionar tratamento de erro global

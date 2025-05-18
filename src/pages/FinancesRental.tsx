@@ -183,7 +183,7 @@ const FinancesRental = () => {
                             : transaction.description}
                         </td>
                         <td className={`p-4 text-right ${transaction.type === 'income' ? 'text-green-600' : 'text-red-600'}`}>
-                          {transaction.type === 'income' ? '+' : '-'} R$ {transaction.amount.toFixed(2)}
+                          {transaction.type === 'income' ? '+' : '-'} R$ {Number(transaction.amount).toFixed(2)}
                         </td>
                       </tr>
                     ))}

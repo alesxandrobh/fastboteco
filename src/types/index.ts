@@ -68,3 +68,13 @@ export interface Reservation {
   table: number;
   contact: string;
 }
+
+// Adiciona a tipagem para Rental
+export interface Rental {
+  id: number;
+  client: string;
+  eventType: string;
+  date: string;
+  totalValue: number;
+  status: string;
+}

@@ -7,7 +7,7 @@ USE barfesta_db;
 -- Usuário admin
 INSERT INTO users (name, email, password, role, active) VALUES
   ('Admin Teste', 'admin+teste@barfesta.com', '$2b$10$5LC/5Bza7XjhqIKEmWFFB.wf3GtdKZCi7B4O1Lei/QIOGDfgm5uBK', 'admin', true)
-ON DUPLICATE KEY UPDATE name=VALUES(name), password=VALUES(password);
+ON DUPLICATE KEY UPDATE name=VALUES(name), password=VALUES(password), active=true;
 
 -- Unidade
 INSERT INTO units (name, address, phone, active) VALUES
